@@ -6,6 +6,7 @@ from conans import ConanFile, CMake, tools
 class RbdlJetTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
+    requires = [("eigen/3.3.5@conan/stable")]
 
     def build(self):
         cmake = CMake(self)
@@ -13,7 +14,7 @@ class RbdlJetTestConan(ConanFile):
         # in "test_package"
         cmake.configure()
         cmake.build()
-
+    
     def imports(self):
         self.copy("*.dll", dst="bin", src="bin")
         self.copy("*.dylib*", dst="bin", src="lib")
@@ -21,5 +22,5 @@ class RbdlJetTestConan(ConanFile):
 
     def test(self):
         if not tools.cross_building(self):
-            # os.chdir("bin")
+            os.chdir("bin")
             self.run(".%sexample" % os.sep)

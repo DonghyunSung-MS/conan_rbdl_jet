@@ -1,5 +1,5 @@
 from conans import ConanFile, CMake
-
+import os
 
 class RbdlJetConan(ConanFile):
     name = "rbdl_jet"
@@ -15,11 +15,14 @@ class RbdlJetConan(ConanFile):
     generators = "cmake"
     exports_sources = "src/*"
 
+    def build_requirements(self):
+        self.build_requires("eigen/3.3.5@conan/stable")
+
     def build(self):
         cmake = CMake(self)
         cmake.definitions["RBDL_BUILD_ADDON_URDFREADER"] = "Generic"
         cmake.definitions["CMAKE_BUILD_TYPE"] = "Release"
-        cmake.configure(source_folder="src")
+        cmake.configure(source_folder="src", build_folder="build")
         cmake.build()
 
         # Explicit way:
@@ -28,12 +31,10 @@ class RbdlJetConan(ConanFile):
         # self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
-        self.copy("*.h", dst="include", src="src")
-        self.copy("*.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.dylib*", dst="lib", keep_path=False)
+        self.copy("*.h", dst="include", src="src/include")
+        self.copy("*.h", dst="include", src="build/include")
+        self.copy("*.h", dst="include/rbdl/addons/", src="src/addons")
         self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.a", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["rbdl_jet"]
+        self.cpp_info.libs = self.collect_libs()
