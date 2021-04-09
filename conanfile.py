@@ -22,6 +22,7 @@ class RbdlJetConan(ConanFile):
         cmake = CMake(self)
         cmake.definitions["RBDL_BUILD_ADDON_URDFREADER"] = "Generic"
         cmake.definitions["CMAKE_BUILD_TYPE"] = "Release"
+        cmake.definitions["PYTHON_EXECUTABLE"] = "/usr/bin/python"
         cmake.configure(source_folder="src", build_folder="build")
         cmake.build()
 
